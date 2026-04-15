@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar" style="scroll-behavior: smooth; scroll-padding-top: 5rem;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة مكاني - جامعة الأمير سطام</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
+        
+        body {
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        @keyframes slideUp { 
+            from { opacity: 0; transform: translateY(30px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        .animate-slide-up { 
+            animation: slideUp 0.7s ease-out forwards; 
+            opacity: 0; 
+        }
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
+        
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <!-- ========================================== -->
+    <!-- 1. صفحة تسجيل الدخول (Login View) -->
+    <!-- ========================================== -->
+    <div id="login-view" class="min-h-screen flex items-center justify-center p-4">
+        <div class="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
+            <div class="bg-blue-900 p-8 text-center text-white relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-blue-800 rounded-full -mr-16 -mt-16 opacity-50"></div>
+                <div class="absolute bottom-0 left-0 w-24 h-24 bg-blue-700 rounded-full -ml-12 -mb-12 opacity-50"></div>
+                <i data-lucide="graduation-cap" class="w-16 h-16 mx-auto mb-4 relative z-10"></i>
+                <h1 class="text-3xl font-bold mb-2 relative z-10">منصة مكاني</h1>
+                <p class="text-blue-200 text-sm relative z-10">جامعة الأمير سطام بن عبدالعزيز</p>
+            </div>
+            <div class="p-8">
+                <h2 class="text-xl font-semibold text-slate-800 mb-6 text-center">تسجيل دخول الطلاب</h2>
+                <form id="login-form" class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">اسم الطالب</label>
+                        <div class="relative">
+                            <i data-lucide="user" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5"></i>
+                            <input id="student-name-input" type="text" required placeholder="مثال: محمد المبارك" class="w-full pl-4 pr-10 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-900 focus:border-blue-900 transition-colors bg-slate-50 outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">الرقم الجامعي</label>
+                        <div class="relative">
+                            <i data-lucide="book-open" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5"></i>
+                            <input id="student-id-input" type="number" required placeholder="مثال: 446000000" class="w-full pl-4 pr-10 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-900 focus:border-blue-900 transition-colors bg-slate-50 outline-none">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-medium py-3 rounded-lg transition-colors shadow-md hover:shadow-lg mt-4 flex items-center justify-center gap-2">
+                        دخول
+                        <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 2. الهيكل الرئيسي للمنصة (Main App View) -->
+    <!-- ========================================== -->
+    <div id="main-view" class="hidden min-h-screen bg-slate-100 pb-10">
+        
+        <!-- النوافذ المنبثقة (Modals) -->
+        <!-- بطاقة الطالب -->
+        <div id="profile-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 transition-opacity">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-slide-up">
+                <div class="bg-blue-900 p-6 text-center relative">
+                    <button onclick="toggleModal('profile-modal', false)" class="absolute top-4 left-4 text-blue-200 hover:text-white transition-colors">✕</button>
+                    <div class="w-20 h-20 bg-amber-400 rounded-full mx-auto mb-3 border-4 border-white flex items-center justify-center shadow-lg">
+                        <i data-lucide="user" class="w-10 h-10 text-blue-900"></i>
+                    </div>
+                    <h3 id="display-profile-name" class="text-xl font-bold text-white"></h3>
+                    <p id="display-profile-id" class="text-blue-200 text-sm"></p>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                        <span class="text-slate-500 text-sm">الكلية</span><span class="font-semibold text-slate-800">الهندسة وعلوم الحاسب</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                        <span class="text-slate-500 text-sm">التخصص</span><span class="font-semibold text-slate-800">هندسة البرمجيات</span>
+                    </div>
+                    <div class="flex justify-between items-center pb-1">
+                        <span class="text-slate-500 text-sm">المعدل التراكمي</span><span class="font-semibold text-emerald-600">4.85 / 5.00</span>
+                    </div>
+                </div>
+                <div class="bg-slate-50 p-4 border-t border-slate-100 text-center">
+                    <button onclick="toggleModal('profile-modal', false)" class="text-blue-600 font-medium hover:text-blue-800 transition-colors">إغلاق البطاقة</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- نافذة التواصل -->
+        <div id="contact-modal" class="fixed inset-0 z-[70] hidden items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 transition-opacity">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-slide-up">
+                <div class="p-6 text-center border-b border-slate-100">
+                    <h3 id="contact-name" class="text-lg font-bold text-slate-800 mb-1"></h3>
+                    <p id="contact-title" class="text-sm text-slate-500"></p>
+                </div>
+                <div class="p-6 space-y-3">
+                    <button class="w-full flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#128C7E] text-white py-3 rounded-xl font-medium transition-colors shadow-sm">
+                        <i data-lucide="phone" class="w-5 h-5"></i> عبر واتساب
+                    </button>
+                    <button class="w-full flex items-center justify-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 py-3 rounded-xl font-medium transition-colors shadow-sm">
+                        <i data-lucide="message-square" class="w-5 h-5"></i> محادثة داخل التطبيق
+                    </button>
+                </div>
+                <div class="bg-slate-50 p-4 border-t border-slate-100 text-center">
+                    <button onclick="toggleModal('contact-modal', false)" class="text-slate-600 font-medium hover:text-slate-800 transition-colors">إلغاء</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navbar -->
+        <nav class="bg-blue-900 text-white shadow-md sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center gap-6">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="graduation-cap" class="w-8 h-8 text-amber-400"></i>
+                            <span class="font-bold text-xl tracking-wide hidden sm:block">مكاني</span>
+                        </div>
+                        
+                        <!-- أزرار التنقل -->
+                        <div class="flex items-center gap-1 bg-blue-800/50 p-1 rounded-lg overflow-x-auto hide-scrollbar max-w-[50vw] sm:max-w-full">
+                            <a href="#home-section" class="px-3 md:px-4 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 text-blue-100 hover:text-white hover:bg-blue-800 focus:bg-white focus:text-blue-900 whitespace-nowrap">
+                                <i data-lucide="building-2" class="w-4 h-4"></i> الرئيسية
+                            </a>
+                            <a href="#map-section" class="px-3 md:px-4 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 text-blue-100 hover:text-white hover:bg-blue-800 focus:bg-white focus:text-blue-900 whitespace-nowrap">
+                                <i data-lucide="map" class="w-4 h-4"></i> الملاحة
+                            </a>
+                            <a href="#market-section" class="px-3 md:px-4 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 text-blue-100 hover:text-white hover:bg-blue-800 focus:bg-white focus:text-blue-900 whitespace-nowrap">
+                                <i data-lucide="leaf" class="w-4 h-4"></i> سوق إرث
+                            </a>
+                            <a href="#reports-section" class="px-3 md:px-4 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 text-blue-100 hover:text-white hover:bg-blue-800 focus:bg-white focus:text-blue-900 whitespace-nowrap hidden lg:flex">
+                                <i data-lucide="life-buoy" class="w-4 h-4"></i> البلاغات
+                            </a>
+                            <a href="#ai-assistant-section" class="px-3 md:px-4 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 text-blue-100 hover:text-white hover:bg-blue-800 focus:bg-white focus:text-blue-900 whitespace-nowrap">
+                                <i data-lucide="bot" class="w-4 h-4"></i> المساعد
+                            </a>
+                            <a href="#footprint-section" class="px-3 md:px-4 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 text-blue-100 hover:text-white hover:bg-blue-800 focus:bg-white focus:text-blue-900 whitespace-nowrap">
+                                <i data-lucide="fingerprint" class="w-4 h-4"></i> بصمة الطالب
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                        <button onclick="toggleModal('profile-modal', true)" class="hidden md:flex items-center gap-2 bg-blue-800 px-4 py-1.5 rounded-full text-sm hover:bg-blue-700 transition-colors cursor-pointer border border-blue-700">
+                            <i data-lucide="user" class="w-4 h-4 text-amber-400"></i>
+                            <span id="nav-user-name"></span>
+                        </button>
+                        <button onclick="handleLogout()" class="p-2 hover:bg-red-600 rounded-full transition-colors flex items-center gap-1 text-sm text-red-100 hover:text-white">
+                            <i data-lucide="log-out" class="w-5 h-5"></i>
+                            <span class="hidden sm:inline">خروج</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- ========================================== -->
+        <!-- 3. الصفحة الرئيسية (Home) -->
+        <!-- ========================================== -->
+        <div id="home-section">
+            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-8">
+                <!-- البانر الترحيبي -->
+                <div class="animate-slide-up bg-gradient-to-l from-blue-900 to-blue-800 rounded-2xl p-6 md:p-8 shadow-lg flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden text-white transition-transform duration-500 hover:shadow-xl">
+                    <div class="relative z-10">
+                        <h1 class="text-2xl md:text-3xl font-bold mb-3">
+                            مرحباً بك يا <span id="welcome-name" class="text-amber-400"></span> في منصتك الأكاديمية
+                        </h1>
+                        <p class="text-blue-100 max-w-2xl text-lg leading-relaxed">
+                            منصة "مكاني" هي دليلك الشامل لجميع الفعاليات والدورات. انتقل إلى "الملاحة الذكية" لمعرفة مسارك في الحرم الجامعي!
+                        </p>
+                    </div>
+                    <div class="hidden md:flex relative z-10 bg-white/10 p-5 rounded-full border border-white/20 backdrop-blur-sm transform hover:scale-110 transition-transform duration-300 shadow-inner">
+                       <i data-lucide="award" class="w-16 h-16 text-amber-400"></i>
+                    </div>
+                    <div class="absolute right-0 top-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32 pointer-events-none"></div>
+                    <div class="absolute left-0 bottom-0 w-48 h-48 bg-amber-400 opacity-10 rounded-full -ml-24 -mb-24 pointer-events-none"></div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 space-y-8">
+                        <!-- الإعلانات -->
+                        <section class="animate-slide-up delay-100">
+                            <div class="flex items-center gap-2 mb-4">
+                                <i data-lucide="bell" class="w-6 h-6 text-amber-500"></i>
+                                <h2 class="text-xl font-bold text-slate-800">الإعلانات الجامعية</h2>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="p-4 rounded-xl border flex items-start gap-4 shadow-sm hover:-translate-y-1 transition-transform duration-300 bg-red-50 text-red-700 border-red-200">
+                                    <div class="mt-1 bg-white p-1.5 rounded-full opacity-80"><i data-lucide="bell" class="w-4 h-4"></i></div>
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-white bg-opacity-50">هام</span><span class="text-xs opacity-75">اليوم</span>
+                                        </div>
+                                        <p class="font-semibold">بدء التسجيل في الفصل الصيفي</p>
+                                    </div>
+                                </div>
+                                <div class="p-4 rounded-xl border flex items-start gap-4 shadow-sm hover:-translate-y-1 transition-transform duration-300 bg-blue-50 text-blue-700 border-blue-200">
+                                    <div class="mt-1 bg-white p-1.5 rounded-full opacity-80"><i data-lucide="bell" class="w-4 h-4"></i></div>
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-white bg-opacity-50">عام</span><span class="text-xs opacity-75">منذ يومين</span>
+                                        </div>
+                                        <p class="font-semibold">تحديث مواعيد المكتبة المركزية</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- الفعاليات -->
+                        <section class="animate-slide-up delay-200">
+                            <div class="flex items-center gap-2 mb-4">
+                                <i data-lucide="calendar" class="w-6 h-6 text-blue-600"></i>
+                                <h2 class="text-xl font-bold text-slate-800">الفعاليات القادمة</h2>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full">15 - 17 مايو</div>
+                                    </div>
+                                    <h3 class="font-bold text-lg text-slate-800 mb-2 group-hover:text-blue-600 transition-colors">هاكاثون الابتكار الجامعي</h3>
+                                    <p class="text-sm text-slate-600 leading-relaxed">شارك بأفكارك التقنية لحل التحديات الجامعية.</p>
+                                </div>
+                                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full">20 مايو</div>
+                                    </div>
+                                    <h3 class="font-bold text-lg text-slate-800 mb-2 group-hover:text-blue-600 transition-colors">معرض مشاريع التخرج</h3>
+                                    <p class="text-sm text-slate-600 leading-relaxed">استعراض أبرز مشاريع طلاب الدفعة الحالية.</p>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- الدورات التدريبية -->
+                    <div class="lg:col-span-1 animate-slide-up delay-300">
+                        <section class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-full hover:shadow-md transition-shadow">
+                            <div class="flex items-center justify-between mb-6 border-b border-slate-100 pb-4">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="book-open" class="w-6 h-6 text-emerald-600"></i>
+                                    <h2 class="text-xl font-bold text-slate-800">الدورات التدريبية</h2>
+                                </div>
+                            </div>
+                            <div class="space-y-6">
+                                <div class="relative pl-4 border-r-2 border-emerald-100 hover:border-emerald-500 transition-colors">
+                                    <span class="inline-block px-2 py-0.5 rounded text-xs font-bold mb-2 bg-emerald-100 text-emerald-700">اليوم</span>
+                                    <h3 class="font-bold text-slate-800 mb-2">أساسيات الذكاء الاصطناعي</h3>
+                                    <div class="space-y-1 text-sm text-slate-600">
+                                        <div class="flex items-center gap-2"><i data-lucide="user" class="w-4 h-4 text-slate-400"></i><span>د. أحمد عبدالله</span></div>
+                                        <div class="flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4 text-slate-400"></i><span>04:00 م - 06:00 م</span></div>
+                                    </div>
+                                </div>
+                                <div class="relative pl-4 border-r-2 border-emerald-100 hover:border-emerald-500 transition-colors">
+                                    <span class="inline-block px-2 py-0.5 rounded text-xs font-bold mb-2 bg-blue-100 text-blue-700">غداً</span>
+                                    <h3 class="font-bold text-slate-800 mb-2">ورشة عمل كتابة السيرة الذاتية</h3>
+                                    <div class="space-y-1 text-sm text-slate-600">
+                                        <div class="flex items-center gap-2"><i data-lucide="user" class="w-4 h-4 text-slate-400"></i><span>أ. خالد الدوسري</span></div>
+                                        <div class="flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4 text-slate-400"></i><span>10:00 ص - 12:00 م</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- فاصل جمالي -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-16 animate-slide-up delay-300">
+            <div class="flex items-center gap-4 opacity-50">
+                <div class="h-px flex-1 bg-slate-300"></div><i data-lucide="map" class="w-6 h-6 text-slate-400"></i><div class="h-px flex-1 bg-slate-300"></div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 4. الملاحة الذكية (Map View) -->
+        <!-- ========================================== -->
+        <div id="map-section">
+            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pb-12 animate-slide-up">
+                <div class="mb-6">
+                    <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                        <i data-lucide="map" class="w-7 h-7 text-blue-600"></i> نظام الملاحة الجامعي الذكي
+                    </h1>
+                    <p class="text-slate-600 mt-1">ابحث عن القاعات، المكاتب، وتعرف على حالة الازدحام والفعاليات الحية في الحرم الجامعي.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    <!-- البحث -->
+                    <div class="lg:col-span-1 bg-white rounded-2xl border border-slate-200 shadow-sm p-5 h-fit sticky top-24">
+                        <h2 class="font-bold text-lg text-slate-800 mb-4 flex items-center gap-2">
+                            <i data-lucide="search" class="w-5 h-5 text-emerald-600"></i> الدليل والملاحة
+                        </h2>
+                        
+                        <!-- بحث القاعات -->
+                        <form id="map-search-form" class="mb-6">
+                            <label class="block text-sm font-medium text-slate-600 mb-2">أدخل رمز القاعة للتحليل</label>
+                            <div class="flex gap-2">
+                                <input id="map-search-input" type="text" placeholder="مثال: C206 01 54 C" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none text-left uppercase tracking-wider" dir="ltr">
+                                <button type="submit" class="bg-blue-900 text-white px-3 py-2 rounded-lg hover:bg-blue-800 transition">تحليل</button>
+                            </div>
+                        </form>
+                        <div id="map-search-result"></div>
+
+                        <!-- بحث الدكاترة -->
+                        <div class="mt-8 border-t border-slate-100 pt-6">
+                            <h3 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+                                <i data-lucide="user" class="w-4 h-4 text-blue-600"></i> البحث عن مكتب دكتور
+                            </h3>
+                            <form id="doctor-search-form" class="mb-4">
+                                <div class="flex gap-2">
+                                    <input id="doctor-search-input" type="text" placeholder="اسم الدكتور (مثال: محمد)" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none text-right">
+                                    <button type="submit" class="bg-blue-900 text-white px-3 py-2 rounded-lg hover:bg-blue-800 transition">بحث</button>
+                                </div>
+                            </form>
+                            <div id="doctor-search-result"></div>
+                        </div>
+                    </div>
+
+                    <!-- الخريطة -->
+                    <div class="lg:col-span-3 bg-slate-200 rounded-2xl border-4 border-white shadow-inner p-4 md:p-8 relative min-h-[500px] flex flex-col justify-between overflow-hidden">
+                        <!-- دليل الإشارات -->
+                        <div class="absolute top-4 left-4 bg-white/80 backdrop-blur-md p-3 rounded-lg shadow-sm border border-slate-200 z-20 pointer-events-none">
+                            <h3 class="text-xs font-bold text-slate-700 mb-2">دليل الإشارات:</h3>
+                            <ul class="space-y-2 text-[10px] text-slate-600">
+                                <li class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> مواقف مزدحمة</li>
+                                <li class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> فعالية حية</li>
+                                <li class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-blue-500"></span> حالة طبيعية</li>
+                            </ul>
+                        </div>
+
+                        <!-- زخرفة -->
+                        <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: radial-gradient(#000 1px, transparent 1px); background-size: 20px 20px;"></div>
+
+                        <!-- الصف العلوي -->
+                        <div class="grid grid-cols-3 gap-2 md:gap-6 relative z-10">
+                            <!-- كلية التربية -->
+                            <div class="bg-white/90 backdrop-blur rounded-xl p-4 md:p-6 shadow-md border-b-4 border-blue-400 flex flex-col items-center justify-center text-center group cursor-pointer hover:-translate-y-1 transition-transform h-32 md:h-40 relative">
+                                <i data-lucide="book-text" class="w-8 h-8 md:w-10 md:h-10 text-blue-600 mb-2 group-hover:scale-110 transition-transform"></i>
+                                <span class="font-bold text-xs md:text-sm text-slate-800">كلية التربية</span>
+                                <div class="absolute top-2 right-2 w-3 h-3 bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.8)]"></div>
+                            </div>
+                            <!-- المكتبة المركزية -->
+                            <div class="bg-white/90 backdrop-blur rounded-xl p-4 md:p-6 shadow-md border-b-4 border-amber-500 flex flex-col items-center justify-center text-center group cursor-pointer hover:-translate-y-1 transition-transform h-32 md:h-40 relative">
+                                <i data-lucide="library" class="w-8 h-8 md:w-10 md:h-10 text-amber-600 mb-2 group-hover:scale-110 transition-transform"></i>
+                                <span class="font-bold text-xs md:text-sm text-slate-800">المكتبة المركزية</span>
+                                <div class="absolute -top-1 -right-1">
+                                    <span class="flex h-4 w-4 relative">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-4 w-4 bg-amber-500 border-2 border-white"></span>
+                                    </span>
+                                </div>
+                                <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded shadow-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20">معرض الكتاب</div>
+                            </div>
+                            <!-- كلية الطب -->
+                            <div class="bg-white/90 backdrop-blur rounded-xl p-4 md:p-6 shadow-md border-b-4 border-rose-400 flex flex-col items-center justify-center text-center group cursor-pointer hover:-translate-y-1 transition-transform h-32 md:h-40 relative">
+                                <i data-lucide="stethoscope" class="w-8 h-8 md:w-10 md:h-10 text-rose-600 mb-2 group-hover:scale-110 transition-transform"></i>
+                                <span class="font-bold text-xs md:text-sm text-slate-800">كلية الطب</span>
+                                <div class="absolute top-2 right-2 w-3 h-3 bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.8)]"></div>
+                            </div>
+                        </div>
+
+                        <!-- الممشى -->
+                        <div class="my-6 w-full h-20 md:h-28 bg-emerald-100/80 border-y-2 border-emerald-200 rounded-lg relative flex items-center justify-around overflow-hidden shadow-inner">
+                            <i data-lucide="tree-pine" class="w-8 h-8 md:w-12 md:h-12 text-emerald-600/60"></i>
+                            <div class="flex flex-col items-center opacity-50"><div class="h-1 w-16 bg-white rounded-full mb-2"></div><div class="h-1 w-16 bg-white rounded-full mb-2"></div><div class="h-1 w-16 bg-white rounded-full"></div></div>
+                            <i data-lucide="tree-pine" class="w-10 h-10 md:w-16 md:h-16 text-emerald-600/70"></i>
+                            <div class="flex flex-col items-center opacity-50 hidden sm:flex"><div class="h-1 w-16 bg-white rounded-full mb-2"></div><div class="h-1 w-16 bg-white rounded-full mb-2"></div><div class="h-1 w-16 bg-white rounded-full"></div></div>
+                            <i data-lucide="tree-pine" class="w-8 h-8 md:w-12 md:h-12 text-emerald-600/60"></i>
+                        </div>
+
+                        <!-- الصف السفلي -->
+                        <div class="grid grid-cols-3 gap-2 md:gap-6 relative z-10">
+                            <!-- إدارة الأعمال -->
+                            <div class="bg-white/90 backdrop-blur rounded-xl p-4 md:p-6 shadow-md border-t-4 border-indigo-400 flex flex-col items-center justify-center text-center group cursor-pointer hover:-translate-y-1 transition-transform h-32 md:h-40 relative">
+                                <i data-lucide="briefcase" class="w-8 h-8 md:w-10 md:h-10 text-indigo-600 mb-2 group-hover:scale-110 transition-transform"></i>
+                                <span class="font-bold text-xs md:text-sm text-slate-800">إدارة الأعمال</span>
+                                <div class="absolute top-2 right-2 w-3 h-3 bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.8)]"></div>
+                            </div>
+                            <!-- المطعم المركزي -->
+                            <div class="bg-white/90 backdrop-blur rounded-xl p-4 md:p-6 shadow-md border-t-4 border-orange-400 flex flex-col items-center justify-center text-center group cursor-pointer hover:-translate-y-1 transition-transform h-32 md:h-40 relative">
+                                <i data-lucide="utensils" class="w-8 h-8 md:w-10 md:h-10 text-orange-600 mb-2 group-hover:scale-110 transition-transform"></i>
+                                <span class="font-bold text-xs md:text-sm text-slate-800">المطعم المركزي</span>
+                                <div class="absolute top-2 right-2 w-3 h-3 bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.8)]"></div>
+                            </div>
+                            <!-- كلية الهندسة -->
+                            <div class="bg-white/90 backdrop-blur rounded-xl p-4 md:p-6 shadow-md border-t-4 border-slate-700 flex flex-col items-center justify-center text-center group cursor-pointer hover:-translate-y-1 transition-transform h-32 md:h-40 relative">
+                                <i data-lucide="cpu" class="w-8 h-8 md:w-10 md:h-10 text-slate-700 mb-2 group-hover:scale-110 transition-transform"></i>
+                                <span class="font-bold text-xs md:text-sm text-slate-800">الهندسة والحاسب</span>
+                                <div class="absolute -top-1 -right-1">
+                                    <span class="flex h-4 w-4 relative">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-4 w-4 bg-red-500 border-2 border-white"></span>
+                                    </span>
+                                </div>
+                                <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-red-100 text-red-800 text-[10px] font-bold px-2 py-0.5 rounded shadow-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 flex items-center gap-1">
+                                    <i data-lucide="car" class="w-3 h-3"></i> ازدحام بالمواقف
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-16 animate-slide-up delay-300">
+            <div class="flex items-center gap-4 opacity-50"><div class="h-px flex-1 bg-slate-300"></div><i data-lucide="leaf" class="w-6 h-6 text-emerald-500"></i><div class="h-px flex-1 bg-slate-300"></div></div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 5. سوق إرث (Market View) -->
+        <!-- ========================================== -->
+        <div id="market-section">
+            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pb-20 animate-slide-up">
+                <!-- Header Section -->
+                <div class="bg-gradient-to-l from-emerald-800 to-emerald-600 rounded-2xl p-6 md:p-8 shadow-lg flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden text-white mb-8">
+                    <div class="relative z-10 flex-1">
+                        <div class="flex items-center gap-3 mb-3">
+                            <i data-lucide="leaf" class="w-8 h-8 text-emerald-300"></i>
+                            <h1 class="text-2xl md:text-3xl font-bold">سوق إرث</h1>
+                        </div>
+                        <p class="text-emerald-100 max-w-2xl text-lg leading-relaxed">منصة مستدامة لتبادل وإهداء الكتب والأدوات الجامعية المستعملة. ساهم في تقليل الهدر المالي والبيئي، واترك أثراً لمن بعدك.</p>
+                    </div>
+                    <div class="relative z-10 flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                        <button class="bg-white text-emerald-800 hover:bg-emerald-50 px-6 py-3 rounded-xl font-bold transition-colors shadow-sm flex items-center justify-center gap-2 w-full sm:w-auto">
+                            <i data-lucide="plus" class="w-5 h-5"></i> أضف أداة أو كتاب
+                        </button>
+                    </div>
+                    <!-- Decor -->
+                    <div class="absolute right-0 top-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32 pointer-events-none"></div>
+                    <div class="absolute left-0 bottom-0 w-48 h-48 bg-emerald-900 opacity-20 rounded-full -ml-24 -mb-24 pointer-events-none"></div>
+                </div>
+
+                <div class="flex flex-col lg:flex-row gap-8">
+                    <!-- Filters -->
+                    <div class="w-full lg:w-64 flex-shrink-0">
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm sticky top-24">
+                            <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2 border-b border-slate-100 pb-3">
+                                <i data-lucide="filter" class="w-5 h-5 text-emerald-600"></i> التصنيفات
+                            </h3>
+                            <div class="flex flex-row lg:flex-col gap-2 overflow-x-auto pb-2 lg:pb-0" id="market-filters">
+                                <button onclick="filterMarket('الكل', this)" class="market-filter-btn px-4 py-2.5 rounded-xl text-sm font-medium transition-colors text-right whitespace-nowrap bg-emerald-100 text-emerald-800 border-r-4 border-emerald-600">الكل</button>
+                                <button onclick="filterMarket('كتب دراسية', this)" class="market-filter-btn px-4 py-2.5 rounded-xl text-sm font-medium transition-colors text-right whitespace-nowrap text-slate-600 hover:bg-slate-50 hover:text-emerald-600 border-r-4 border-transparent">كتب دراسية</button>
+                                <button onclick="filterMarket('أدوات هندسية', this)" class="market-filter-btn px-4 py-2.5 rounded-xl text-sm font-medium transition-colors text-right whitespace-nowrap text-slate-600 hover:bg-slate-50 hover:text-emerald-600 border-r-4 border-transparent">أدوات هندسية</button>
+                                <button onclick="filterMarket('مستلزمات طبية', this)" class="market-filter-btn px-4 py-2.5 rounded-xl text-sm font-medium transition-colors text-right whitespace-nowrap text-slate-600 hover:bg-slate-50 hover:text-emerald-600 border-r-4 border-transparent">مستلزمات طبية</button>
+                            </div>
+                            
+                            <div class="mt-8 pt-6 border-t border-slate-100">
+                                <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
+                                    <h4 class="text-sm font-bold text-emerald-800 mb-2 flex items-center gap-1"><i data-lucide="leaf" class="w-4 h-4"></i> أثرك البيئي</h4>
+                                    <p class="text-xs text-emerald-600 leading-relaxed">بمشاركتك في سوق إرث، ساهم طلاب الجامعة في حفظ أكثر من <strong>500 كتاب</strong> من التلف وإعادة استخدامها هذا الفصل الدراسي!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Items Grid -->
+                    <div class="flex-1">
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" id="market-items-grid">
+                            <!-- Card 1 -->
+                            <div data-category="كتب دراسية" class="market-item bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden group flex flex-col">
+                                <div class="h-40 bg-slate-100 relative flex items-center justify-center border-b border-slate-100 group-hover:bg-emerald-50 transition-colors">
+                                    <i data-lucide="book" class="w-16 h-16 text-slate-300 group-hover:text-emerald-300 transition-colors"></i>
+                                    <div class="absolute top-3 right-3"><span class="text-xs font-bold px-2.5 py-1 rounded-full shadow-sm bg-emerald-100 text-emerald-700">مجاناً</span></div>
+                                </div>
+                                <div class="p-5 flex-1 flex flex-col">
+                                    <div class="flex items-center gap-2 mb-2"><span class="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">كتب دراسية</span><span class="text-[10px] text-slate-400 flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> منذ ساعتين</span></div>
+                                    <h3 class="font-bold text-slate-800 mb-2 leading-snug flex-1">كتاب التفاضل والتكامل (Calculus 1)</h3>
+                                    <div class="space-y-2 mt-auto pt-4 border-t border-slate-100">
+                                        <p class="text-xs text-slate-600 flex items-center gap-1.5"><i data-lucide="info" class="w-3.5 h-3.5 text-slate-400"></i> الحالة: مستعمل بحالة ممتازة</p>
+                                        <div class="flex items-center justify-between">
+                                            <p class="text-xs text-slate-600 flex items-center gap-1.5"><i data-lucide="user" class="w-3.5 h-3.5 text-slate-400"></i> بواسطة: <span class="font-medium text-slate-800">محمد المبارك</span></p>
+                                            <button onclick="openContactModal('محمد المبارك', 'كتاب التفاضل والتكامل (Calculus 1)')" class="text-emerald-600 hover:bg-emerald-50 p-2 rounded-full transition-colors"><i data-lucide="message-circle" class="w-4 h-4"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Card 2 -->
+                            <div data-category="مستلزمات طبية" class="market-item bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden group flex flex-col">
+                                <div class="h-40 bg-slate-100 relative flex items-center justify-center border-b border-slate-100 group-hover:bg-emerald-50 transition-colors">
+                                    <i data-lucide="pen-tool" class="w-16 h-16 text-slate-300 group-hover:text-emerald-300 transition-colors"></i>
+                                    <div class="absolute top-3 right-3"><span class="text-xs font-bold px-2.5 py-1 rounded-full shadow-sm bg-white text-slate-700 border border-slate-200">30 ريال</span></div>
+                                </div>
+                                <div class="p-5 flex-1 flex flex-col">
+                                    <div class="flex items-center gap-2 mb-2"><span class="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">مستلزمات طبية</span><span class="text-[10px] text-slate-400 flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> منذ يوم</span></div>
+                                    <h3 class="font-bold text-slate-800 mb-2 leading-snug flex-1">بالطو طبي (Lab Coat) مقاس M</h3>
+                                    <div class="space-y-2 mt-auto pt-4 border-t border-slate-100">
+                                        <p class="text-xs text-slate-600 flex items-center gap-1.5"><i data-lucide="info" class="w-3.5 h-3.5 text-slate-400"></i> الحالة: مستعمل</p>
+                                        <div class="flex items-center justify-between">
+                                            <p class="text-xs text-slate-600 flex items-center gap-1.5"><i data-lucide="user" class="w-3.5 h-3.5 text-slate-400"></i> بواسطة: <span class="font-medium text-slate-800">خالد الدوسري</span></p>
+                                            <button onclick="openContactModal('خالد الدوسري', 'بالطو طبي (Lab Coat)')" class="text-emerald-600 hover:bg-emerald-50 p-2 rounded-full transition-colors"><i data-lucide="message-circle" class="w-4 h-4"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 3 -->
+                            <div data-category="أدوات هندسية" class="market-item bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden group flex flex-col">
+                                <div class="h-40 bg-slate-100 relative flex items-center justify-center border-b border-slate-100 group-hover:bg-emerald-50 transition-colors">
+                                    <i data-lucide="pen-tool" class="w-16 h-16 text-slate-300 group-hover:text-emerald-300 transition-colors"></i>
+                                    <div class="absolute top-3 right-3"><span class="text-xs font-bold px-2.5 py-1 rounded-full shadow-sm bg-white text-slate-700 border border-slate-200">45 ريال</span></div>
+                                </div>
+                                <div class="p-5 flex-1 flex flex-col">
+                                    <div class="flex items-center gap-2 mb-2"><span class="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">أدوات هندسية</span><span class="text-[10px] text-slate-400 flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> منذ يومين</span></div>
+                                    <h3 class="font-bold text-slate-800 mb-2 leading-snug flex-1">آلة حاسبة علمية Casio fx-991EX</h3>
+                                    <div class="space-y-2 mt-auto pt-4 border-t border-slate-100">
+                                        <p class="text-xs text-slate-600 flex items-center gap-1.5"><i data-lucide="info" class="w-3.5 h-3.5 text-slate-400"></i> الحالة: مستعمل بحالة جيدة</p>
+                                        <div class="flex items-center justify-between">
+                                            <p class="text-xs text-slate-600 flex items-center gap-1.5"><i data-lucide="user" class="w-3.5 h-3.5 text-slate-400"></i> بواسطة: <span class="font-medium text-slate-800">فهد القحطاني</span></p>
+                                            <button onclick="openContactModal('فهد القحطاني', 'آلة حاسبة علمية')" class="text-emerald-600 hover:bg-emerald-50 p-2 rounded-full transition-colors"><i data-lucide="message-circle" class="w-4 h-4"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-16 animate-slide-up delay-300">
+            <div class="flex items-center gap-4 opacity-50"><div class="h-px flex-1 bg-slate-300"></div><i data-lucide="life-buoy" class="w-6 h-6 text-rose-500"></i><div class="h-px flex-1 bg-slate-300"></div></div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 6. البلاغات والمفقودات (Reports & Lost View) -->
+        <!-- ========================================== -->
+        <div id="reports-section">
+            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pb-20 animate-slide-up">
+                <div class="bg-gradient-to-l from-rose-900 to-rose-700 rounded-2xl p-6 md:p-8 shadow-lg flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden text-white mb-8">
+                    <div class="relative z-10 flex-1">
+                        <div class="flex items-center gap-3 mb-3">
+                            <i data-lucide="life-buoy" class="w-8 h-8 text-rose-300"></i>
+                            <h1 class="text-2xl md:text-3xl font-bold">البلاغات والمفقودات</h1>
+                        </div>
+                        <p class="text-rose-100 max-w-2xl text-lg leading-relaxed">منصة لتوثيق المفقودات والموجودات لرد الأمانات لأصحابها، ورفع بلاغات الصيانة لتعزيز روح المسؤولية المشتركة والمحافظة على مرافق الجامعة.</p>
+                    </div>
+                    <div class="relative z-10 flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                        <button class="bg-white text-rose-800 hover:bg-rose-50 px-6 py-3 rounded-xl font-bold transition-colors shadow-sm flex items-center justify-center gap-2 w-full sm:w-auto">
+                            <i data-lucide="plus" class="w-5 h-5"></i> إضافة بلاغ / مفقود
+                        </button>
+                    </div>
+                    <!-- Decor -->
+                    <div class="absolute right-0 top-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32 pointer-events-none"></div>
+                    <div class="absolute left-0 bottom-0 w-48 h-48 bg-rose-950 opacity-20 rounded-full -ml-24 -mb-24 pointer-events-none"></div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="flex justify-center mb-8">
+                    <div class="bg-white p-1 rounded-xl shadow-sm border border-slate-200 inline-flex" id="reports-tabs">
+                        <button onclick="toggleReportsTab('lost')" class="report-tab active px-6 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2 bg-rose-100 text-rose-800">
+                            <i data-lucide="search" class="w-4 h-4"></i> المفقودات والموجودات
+                        </button>
+                        <button onclick="toggleReportsTab('maintenance')" class="report-tab px-6 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2 text-slate-600 hover:bg-slate-50">
+                            <i data-lucide="alert-triangle" class="w-4 h-4"></i> بلاغات الصيانة
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Lost Items -->
+                <div id="lost-items-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-slide-up">
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+                        <div class="h-48 relative overflow-hidden">
+                            <img src="https://i.ibb.co/fdrw3q4L/p5.jpg" alt="أغراض" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                            <div class="absolute bottom-3 right-3 flex items-center gap-2"><span class="text-xs font-bold px-2.5 py-1 rounded-full border shadow-sm bg-emerald-100 text-emerald-700 border-emerald-200">موجود</span></div>
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-bold text-slate-800 mb-3">أغراض (مفاتيح وفلاشات)</h3>
+                            <div class="space-y-2 mb-4">
+                                <p class="text-sm text-slate-600 flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-slate-400"></i> معمل الحاسب - كلية الهندسة</p>
+                                <p class="text-sm text-slate-600 flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4 text-slate-400"></i> اليوم، 10:30 ص</p>
+                            </div>
+                            <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                                <p class="text-xs text-slate-500 flex items-center gap-1.5"><i data-lucide="user" class="w-3.5 h-3.5 text-slate-400"></i> فاعل خير</p>
+                                <button onclick="openContactModal('فاعل خير', 'أغراض (مفاتيح وفلاشات)')" class="text-rose-600 hover:bg-rose-50 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1"><i data-lucide="message-square" class="w-4 h-4"></i> تواصل</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+                        <div class="h-48 relative overflow-hidden">
+                            <img src="https://i.ibb.co/9k0qBhDs/p3.jpg" alt="آيباد" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                            <div class="absolute bottom-3 right-3 flex items-center gap-2"><span class="text-xs font-bold px-2.5 py-1 rounded-full border shadow-sm bg-emerald-100 text-emerald-700 border-emerald-200">موجود</span></div>
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-bold text-slate-800 mb-3">جهاز آيباد (iPad)</h3>
+                            <div class="space-y-2 mb-4">
+                                <p class="text-sm text-slate-600 flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-slate-400"></i> المكتبة المركزية - الدور الأول</p>
+                                <p class="text-sm text-slate-600 flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4 text-slate-400"></i> اليوم، 01:00 م</p>
+                            </div>
+                            <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                                <p class="text-xs text-slate-500 flex items-center gap-1.5"><i data-lucide="user" class="w-3.5 h-3.5 text-slate-400"></i> إدارة المكتبة</p>
+                                <button onclick="openContactModal('إدارة المكتبة', 'جهاز آيباد')" class="text-rose-600 hover:bg-rose-50 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1"><i data-lucide="message-square" class="w-4 h-4"></i> تواصل</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+                        <div class="h-48 relative overflow-hidden">
+                            <img src="https://i.ibb.co/pvRN4M3L/p4.jpg" alt="سماعة" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                            <div class="absolute bottom-3 right-3 flex items-center gap-2"><span class="text-xs font-bold px-2.5 py-1 rounded-full border shadow-sm bg-rose-100 text-rose-700 border-rose-200">مفقود</span></div>
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-bold text-slate-800 mb-3">سماعة أبل (AirPods)</h3>
+                            <div class="space-y-2 mb-4">
+                                <p class="text-sm text-slate-600 flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-slate-400"></i> كلية إدارة الأعمال - قاعة B102</p>
+                                <p class="text-sm text-slate-600 flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4 text-slate-400"></i> أمس، 02:15 م</p>
+                            </div>
+                            <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                                <p class="text-xs text-slate-500 flex items-center gap-1.5"><i data-lucide="user" class="w-3.5 h-3.5 text-slate-400"></i> سعد العتيبي</p>
+                                <button onclick="openContactModal('سعد العتيبي', 'سماعة أبل')" class="text-rose-600 hover:bg-rose-50 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1"><i data-lucide="message-square" class="w-4 h-4"></i> تواصل</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Maintenance Reports -->
+                <div id="maintenance-container" class="max-w-4xl mx-auto space-y-4 animate-slide-up hidden">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-rose-200 transition-colors">
+                        <div class="flex items-start gap-4">
+                            <div class="bg-slate-100 p-3 rounded-full text-slate-500 shrink-0"><i data-lucide="alert-triangle" class="w-6 h-6"></i></div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 mb-1">تسرب مياه خفيف في دورة المياه</h3>
+                                <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-slate-600">
+                                    <span class="flex items-center gap-1"><i data-lucide="map-pin" class="w-4 h-4 text-slate-400"></i> كلية إدارة الأعمال - الدور الأرضي</span>
+                                    <span class="hidden sm:inline text-slate-300">|</span>
+                                    <span class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4 text-slate-400"></i> اليوم، 09:00 ص</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="px-4 py-2 rounded-xl text-sm font-bold border flex items-center gap-2 shrink-0 self-start sm:self-auto bg-amber-100 text-amber-700 border-amber-200">
+                            <i data-lucide="wrench" class="w-4 h-4"></i> قيد المعالجة
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-rose-200 transition-colors">
+                        <div class="flex items-start gap-4">
+                            <div class="bg-slate-100 p-3 rounded-full text-slate-500 shrink-0"><i data-lucide="alert-triangle" class="w-6 h-6"></i></div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 mb-1">عطل في جهاز العرض (البروجكتر)</h3>
+                                <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-slate-600">
+                                    <span class="flex items-center gap-1"><i data-lucide="map-pin" class="w-4 h-4 text-slate-400"></i> كلية الحاسب - قاعة A105</span>
+                                    <span class="hidden sm:inline text-slate-300">|</span>
+                                    <span class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4 text-slate-400"></i> أمس، 01:30 م</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="px-4 py-2 rounded-xl text-sm font-bold border flex items-center gap-2 shrink-0 self-start sm:self-auto bg-emerald-100 text-emerald-700 border-emerald-200">
+                            <i data-lucide="check-circle" class="w-4 h-4"></i> تم الحل
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-16 animate-slide-up delay-300">
+            <div class="flex items-center gap-4 opacity-50"><div class="h-px flex-1 bg-slate-300"></div><i data-lucide="bot" class="w-6 h-6 text-violet-500"></i><div class="h-px flex-1 bg-slate-300"></div></div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 7. المساعد الذكي (AI Assistant View) -->
+        <!-- ========================================== -->
+        <div id="ai-assistant-section">
+            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pb-20 animate-slide-up">
+                <div class="bg-gradient-to-l from-violet-900 to-violet-700 rounded-2xl p-6 md:p-8 shadow-lg flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden text-white mb-8">
+                    <div class="relative z-10 flex-1">
+                        <div class="flex items-center gap-3 mb-3">
+                            <i data-lucide="bot" class="w-8 h-8 text-violet-300"></i>
+                            <h1 class="text-2xl md:text-3xl font-bold">المساعد الذكي ومدربك الخاص</h1>
+                        </div>
+                        <p class="text-violet-100 max-w-2xl text-lg leading-relaxed">تحدث مع وكيل الذكاء الاصطناعي للإجابة على استفساراتك الأكاديمية، أو تصفح "مجلة مكاني" لمعرفة اللوائح والأنظمة بأسلوب مبسط وسريع.</p>
+                    </div>
+                    <div class="hidden md:flex relative z-10 bg-white/10 p-5 rounded-full border border-white/20 backdrop-blur-sm shadow-inner">
+                       <i data-lucide="sparkles" class="w-16 h-16 text-violet-300"></i>
+                    </div>
+                    <div class="absolute right-0 top-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32 pointer-events-none"></div>
+                    <div class="absolute left-0 bottom-0 w-48 h-48 bg-violet-950 opacity-20 rounded-full -ml-24 -mb-24 pointer-events-none"></div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- واجهة الشات -->
+                    <div class="lg:col-span-2 flex flex-col h-[600px] bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="bg-violet-50 border-b border-violet-100 p-4 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-violet-600 rounded-full flex items-center justify-center shadow-sm relative">
+                                    <i data-lucide="bot" class="w-6 h-6 text-white"></i>
+                                    <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></span>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-slate-800">مكاني AI</h3>
+                                    <p class="text-xs text-violet-600 font-medium flex items-center gap-1"><i data-lucide="sparkles" class="w-3 h-3"></i> متصل ومستعد للمساعدة</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="chat-messages-container" class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50">
+                            <!-- رسالة البداية -->
+                            <div class="flex justify-start">
+                                <div class="max-w-[85%] md:max-w-[70%] p-3.5 rounded-2xl text-sm leading-relaxed bg-white text-slate-700 border border-slate-200 rounded-tl-sm shadow-sm" id="welcome-chat-msg">
+                                    <!-- يتم ملؤه بالـ JS -->
+                                </div>
+                            </div>
+                            
+                            <!-- مؤشر الكتابة (مخفي مبدئياً) -->
+                            <div id="typing-indicator-wrapper" class="flex justify-start hidden">
+                                <div class="bg-white border border-slate-200 p-4 rounded-2xl rounded-tl-sm shadow-sm flex items-center gap-1">
+                                    <div class="w-2 h-2 bg-violet-400 rounded-full animate-bounce" style="animation-delay: 0ms;"></div>
+                                    <div class="w-2 h-2 bg-violet-400 rounded-full animate-bounce" style="animation-delay: 150ms;"></div>
+                                    <div class="w-2 h-2 bg-violet-400 rounded-full animate-bounce" style="animation-delay: 300ms;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Prompts -->
+                        <div class="p-3 bg-white border-t border-slate-100 overflow-x-auto hide-scrollbar whitespace-nowrap flex gap-2">
+                            <button onclick="sendChatMessage('كيف أحسب معدلي التراكمي؟')" class="px-3 py-1.5 bg-violet-50 text-violet-700 border border-violet-100 hover:bg-violet-100 rounded-full text-xs font-medium transition-colors inline-block">كيف أحسب معدلي التراكمي؟</button>
+                            <button onclick="sendChatMessage('ما هي شروط مرتبة الشرف؟')" class="px-3 py-1.5 bg-violet-50 text-violet-700 border border-violet-100 hover:bg-violet-100 rounded-full text-xs font-medium transition-colors inline-block">ما هي شروط مرتبة الشرف؟</button>
+                            <button onclick="sendChatMessage('أحتاج نصائح لتنظيم وقتي للاختبارات')" class="px-3 py-1.5 bg-violet-50 text-violet-700 border border-violet-100 hover:bg-violet-100 rounded-full text-xs font-medium transition-colors inline-block">أحتاج نصائح لتنظيم وقتي للاختبارات</button>
+                        </div>
+
+                        <div class="p-4 bg-white border-t border-slate-200">
+                            <form id="chat-form" class="flex gap-2">
+                                <input id="chat-input" type="text" placeholder="اسأل المساعد الذكي أي شيء..." class="flex-1 bg-slate-100 border-transparent focus:bg-white focus:border-violet-400 focus:ring-2 focus:ring-violet-200 px-4 py-3 rounded-xl outline-none transition-all">
+                                <button type="submit" id="chat-submit-btn" class="bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white w-12 h-12 rounded-xl flex items-center justify-center transition-colors shadow-sm">
+                                    <i data-lucide="send" class="w-5 h-5 rtl:-scale-x-100"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- مجلة المعرفة -->
+                    <div class="lg:col-span-1 h-[600px] flex flex-col">
+                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 h-full flex flex-col">
+                            <div class="flex items-center gap-2 border-b border-slate-100 pb-4 mb-4">
+                                <i data-lucide="book-text" class="w-6 h-6 text-violet-600"></i>
+                                <h2 class="text-xl font-bold text-slate-800">مجلة المعرفة</h2>
+                            </div>
+                            <p class="text-sm text-slate-600 mb-6">تصفح أبرز اللوائح والأنظمة الجامعية بصيغة أسئلة وإجابات مباشرة ومبسطة.</p>
+
+                            <div class="flex-1 overflow-y-auto pr-1 space-y-3 custom-scrollbar">
+                                <!-- FAQ 1 -->
+                                <div class="faq-item border rounded-xl transition-colors overflow-hidden border-slate-200 hover:border-violet-200 bg-white">
+                                    <button onclick="toggleFaq(this)" class="w-full text-right p-4 flex items-center justify-between gap-4 focus:outline-none">
+                                        <span class="font-bold text-sm text-slate-800 flex items-start gap-2"><i data-lucide="help-circle" class="w-4 h-4 text-violet-500 shrink-0 mt-0.5"></i> ما هي شروط الحصول على مرتبة الشرف الأولى؟</span>
+                                        <i data-lucide="chevron-down" class="faq-icon w-4 h-4 text-slate-400 transition-transform duration-300 shrink-0"></i>
+                                    </button>
+                                    <div class="faq-content px-4 text-sm text-slate-600 leading-relaxed transition-all duration-300 max-h-0 opacity-0">
+                                        تُمنح مرتبة الشرف الأولى للطالب الحاصل على معدل تراكمي من (4.75) إلى (5.00) عند التخرج، بشرط ألا يكون قد رسب في أي مقرر درسه في الجامعة، وأن يكمل متطلبات التخرج في المدة القصوى المسموح بها.
+                                    </div>
+                                </div>
+                                <!-- FAQ 2 -->
+                                <div class="faq-item border rounded-xl transition-colors overflow-hidden border-slate-200 hover:border-violet-200 bg-white">
+                                    <button onclick="toggleFaq(this)" class="w-full text-right p-4 flex items-center justify-between gap-4 focus:outline-none">
+                                        <span class="font-bold text-sm text-slate-800 flex items-start gap-2"><i data-lucide="help-circle" class="w-4 h-4 text-violet-500 shrink-0 mt-0.5"></i> متى يحق للطالب الاعتذار عن مقرر دراسي؟</span>
+                                        <i data-lucide="chevron-down" class="faq-icon w-4 h-4 text-slate-400 transition-transform duration-300 shrink-0"></i>
+                                    </button>
+                                    <div class="faq-content px-4 text-sm text-slate-600 leading-relaxed transition-all duration-300 max-h-0 opacity-0">
+                                        يجوز للطالب الاعتذار عن الاستمرار في دراسة مقرر أو أكثر قبل بداية الاختبارات النهائية بخمسة أسابيع كحد أقصى، ووفقاً للتقويم الأكاديمي المعتمد من الجامعة.
+                                    </div>
+                                </div>
+                                <!-- FAQ 3 -->
+                                <div class="faq-item border rounded-xl transition-colors overflow-hidden border-slate-200 hover:border-violet-200 bg-white">
+                                    <button onclick="toggleFaq(this)" class="w-full text-right p-4 flex items-center justify-between gap-4 focus:outline-none">
+                                        <span class="font-bold text-sm text-slate-800 flex items-start gap-2"><i data-lucide="help-circle" class="w-4 h-4 text-violet-500 shrink-0 mt-0.5"></i> كيف أتعامل مع الضغط الأكاديمي؟ (نصيحة مدرب)</span>
+                                        <i data-lucide="chevron-down" class="faq-icon w-4 h-4 text-slate-400 transition-transform duration-300 shrink-0"></i>
+                                    </button>
+                                    <div class="faq-content px-4 text-sm text-slate-600 leading-relaxed transition-all duration-300 max-h-0 opacity-0">
+                                        قسّم المهام الكبيرة إلى أجزاء صغيرة يمكن إنجازها. استخدم تقنية 'بومودورو' (25 دقيقة دراسة، 5 دقائق راحة). ولا تتردد في زيارة وحدة التوجيه والإرشاد بالجامعة إذا احتجت لدعم إضافي.
+                                    </div>
+                                </div>
+                                
+                                <button class="w-full mt-4 py-3 border border-dashed border-violet-300 text-violet-600 rounded-xl text-sm font-bold hover:bg-violet-50 transition-colors flex items-center justify-center gap-2">
+                                    <i data-lucide="file-text" class="w-4 h-4"></i> تصفح دليل الطالب الكامل
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-16 animate-slide-up delay-300">
+            <div class="flex items-center gap-4 opacity-50"><div class="h-px flex-1 bg-slate-300"></div><i data-lucide="fingerprint" class="w-6 h-6 text-cyan-600"></i><div class="h-px flex-1 bg-slate-300"></div></div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 8. بصمة الطالب (Student Footprint View) -->
+        <!-- ========================================== -->
+        <div id="footprint-section">
+            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pb-20 animate-slide-up">
+                <div class="bg-gradient-to-l from-cyan-900 to-cyan-700 rounded-2xl p-6 md:p-8 shadow-lg flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden text-white mb-8">
+                    <div class="relative z-10 flex-1">
+                        <div class="flex items-center gap-3 mb-3">
+                            <i data-lucide="fingerprint" class="w-8 h-8 text-cyan-300"></i>
+                            <h1 class="text-2xl md:text-3xl font-bold">نظام بصمة الطالب</h1>
+                        </div>
+                        <p class="text-cyan-100 max-w-2xl text-lg leading-relaxed">منصة تفاعلية تطرح فيها الجامعة احتياجاتها (التقنية، الهندسية، التنظيمية، والإعلامية)، لتوظف معارفك الأكاديمية لحلها بشراكة مجتمعية. اترك بصمتك قبل التخرج!</p>
+                    </div>
+                    <div class="hidden md:flex relative z-10 bg-white/10 p-5 rounded-full border border-white/20 backdrop-blur-sm shadow-inner transform hover:scale-110 transition-transform duration-300">
+                       <i data-lucide="award" class="w-16 h-16 text-cyan-300"></i>
+                    </div>
+                    <div class="absolute right-0 top-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32 pointer-events-none"></div>
+                    <div class="absolute left-0 bottom-0 w-48 h-48 bg-cyan-950 opacity-20 rounded-full -ml-24 -mb-24 pointer-events-none"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Card 1 -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col group">
+                        <div class="p-5 flex items-start gap-4 border-b bg-amber-50 text-amber-800 border-amber-200">
+                            <div class="p-3 rounded-xl bg-amber-100 text-amber-600 group-hover:scale-110 transition-transform duration-300"><i data-lucide="users" class="w-6 h-6"></i></div>
+                            <div class="flex-1">
+                                <span class="text-[10px] font-bold uppercase tracking-wider bg-white/50 px-2 py-0.5 rounded-md inline-block mb-2">تنظيمي وإعلامي</span>
+                                <h3 class="font-bold text-lg leading-tight">تنظيم وإدارة حفل التخرج السنوي</h3>
+                            </div>
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col">
+                            <p class="text-sm text-slate-600 mb-4 flex items-center gap-2 font-medium"><i data-lucide="building-2" class="w-4 h-4 text-slate-400"></i>الجهة: عمادة شؤون الطلاب</p>
+                            <div class="mb-6">
+                                <p class="text-xs text-slate-500 mb-2 font-bold">المهارات المطلوبة:</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="bg-slate-100 text-slate-600 text-xs px-2.5 py-1 rounded-md border border-slate-200">إدارة الحشود</span>
+                                    <span class="bg-slate-100 text-slate-600 text-xs px-2.5 py-1 rounded-md border border-slate-200">العلاقات العامة</span>
+                                </div>
+                            </div>
+                            <div class="mt-auto pt-4 border-t border-slate-100">
+                                <p class="text-xs text-slate-500 mb-3 font-bold flex items-center gap-1.5"><i data-lucide="award" class="w-4 h-4 text-emerald-500"></i>العائد من المشاركة: <span class="text-slate-800 font-semibold">شهادة شكر + 30 ساعة تطوعية</span></p>
+                                <button class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 group-hover:shadow-md">
+                                    تقدم بطلب المشاركة <i data-lucide="arrow-left" class="w-4 h-4 rtl:rotate-180 transition-transform group-hover:-translate-x-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col group">
+                        <div class="p-5 flex items-start gap-4 border-b bg-emerald-50 text-emerald-800 border-emerald-200">
+                            <div class="p-3 rounded-xl bg-emerald-100 text-emerald-600 group-hover:scale-110 transition-transform duration-300"><i data-lucide="heart-handshake" class="w-6 h-6"></i></div>
+                            <div class="flex-1">
+                                <span class="text-[10px] font-bold uppercase tracking-wider bg-white/50 px-2 py-0.5 rounded-md inline-block mb-2">شراكة مجتمعية</span>
+                                <h3 class="font-bold text-lg leading-tight">التطوع في موسم الحج لخدمة ضيوف الرحمن</h3>
+                            </div>
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col">
+                            <p class="text-sm text-slate-600 mb-4 flex items-center gap-2 font-medium"><i data-lucide="building-2" class="w-4 h-4 text-slate-400"></i>الجهة: عمادة خدمة المجتمع</p>
+                            <div class="mb-6">
+                                <p class="text-xs text-slate-500 mb-2 font-bold">المهارات المطلوبة:</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="bg-slate-100 text-slate-600 text-xs px-2.5 py-1 rounded-md border border-slate-200">الإسعافات الأولية</span>
+                                    <span class="bg-slate-100 text-slate-600 text-xs px-2.5 py-1 rounded-md border border-slate-200">التوجيه والإرشاد</span>
+                                </div>
+                            </div>
+                            <div class="mt-auto pt-4 border-t border-slate-100">
+                                <p class="text-xs text-slate-500 mb-3 font-bold flex items-center gap-1.5"><i data-lucide="award" class="w-4 h-4 text-emerald-500"></i>العائد من المشاركة: <span class="text-slate-800 font-semibold">سجل مهاري معتمد + 100 ساعة</span></p>
+                                <button class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 group-hover:shadow-md">
+                                    تقدم بطلب المشاركة <i data-lucide="arrow-left" class="w-4 h-4 rtl:rotate-180 transition-transform group-hover:-translate-x-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 3 -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col group">
+                        <div class="p-5 flex items-start gap-4 border-b bg-indigo-50 text-indigo-800 border-indigo-200">
+                            <div class="p-3 rounded-xl bg-indigo-100 text-indigo-600 group-hover:scale-110 transition-transform duration-300"><i data-lucide="code" class="w-6 h-6"></i></div>
+                            <div class="flex-1">
+                                <span class="text-[10px] font-bold uppercase tracking-wider bg-white/50 px-2 py-0.5 rounded-md inline-block mb-2">تقني وهندسي</span>
+                                <h3 class="font-bold text-lg leading-tight">تطوير تطبيق الهواتف لمركز الإرشاد</h3>
+                            </div>
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col">
+                            <p class="text-sm text-slate-600 mb-4 flex items-center gap-2 font-medium"><i data-lucide="building-2" class="w-4 h-4 text-slate-400"></i>الجهة: كلية الهندسة وعلوم الحاسب</p>
+                            <div class="mb-6">
+                                <p class="text-xs text-slate-500 mb-2 font-bold">المهارات المطلوبة:</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="bg-slate-100 text-slate-600 text-xs px-2.5 py-1 rounded-md border border-slate-200">تطوير (React)</span>
+                                    <span class="bg-slate-100 text-slate-600 text-xs px-2.5 py-1 rounded-md border border-slate-200">تصميم UI/UX</span>
+                                </div>
+                            </div>
+                            <div class="mt-auto pt-4 border-t border-slate-100">
+                                <p class="text-xs text-slate-500 mb-3 font-bold flex items-center gap-1.5"><i data-lucide="award" class="w-4 h-4 text-emerald-500"></i>العائد من المشاركة: <span class="text-slate-800 font-semibold">مشروع تخرج + مكافأة</span></p>
+                                <button class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 group-hover:shadow-md">
+                                    تقدم بطلب المشاركة <i data-lucide="arrow-left" class="w-4 h-4 rtl:rotate-180 transition-transform group-hover:-translate-x-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-16 py-8 border-t border-slate-200 text-center animate-slide-up delay-300">
+            <p class="text-slate-500 font-medium tracking-wide flex items-center justify-center gap-2" dir="ltr">
+                Developed by 
+                <span class="text-slate-800 font-bold">Mohammed Al-Mubarak</span>
+                <span class="text-blue-600">🚀</span>
+            </p>
+        </footer>
+
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // 1. إدارة تسجيل الدخول (Login System)
+        const loginView = document.getElementById('login-view');
+        const mainView = document.getElementById('main-view');
+        let currentStudentName = '';
+
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('student-name-input').value;
+            const id = document.getElementById('student-id-input').value;
+            
+            if(name && id) {
+                currentStudentName = name;
+                document.getElementById('nav-user-name').innerText = name;
+                document.getElementById('welcome-name').innerText = name;
+                document.getElementById('display-profile-name').innerText = name;
+                document.getElementById('display-profile-id').innerText = id;
+                document.getElementById('welcome-chat-msg').innerText = `أهلاً بك يا ${name}! أنا المساعد الذكي لمنصة "مكاني". أنا هنا لأكون مرشدك ومدربك الخاص. يمكنك سؤالي عن أنظمة الجامعة، لوائح الاختبارات، أو حتى طلب نصائح لتنظيم وقتك الدراسي.`;
+
+                loginView.classList.add('hidden');
+                mainView.classList.remove('hidden');
+            } else {
+                alert('الرجاء إدخال الاسم والرقم الجامعي');
+            }
+        });
+
+        function handleLogout() {
+            loginView.classList.remove('hidden');
+            mainView.classList.add('hidden');
+            document.getElementById('student-name-input').value = '';
+            document.getElementById('student-id-input').value = '';
+        }
+
+        // 2. النوافذ المنبثقة (Modals)
+        function toggleModal(modalId, show) {
+            const modal = document.getElementById(modalId);
+            if(show) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            } else {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        function openContactModal(name, title) {
+            document.getElementById('contact-name').innerText = 'تواصل مع ' + name;
+            document.getElementById('contact-title').innerText = 'بخصوص: ' + title;
+            toggleModal('contact-modal', true);
+        }
+
+        // 3. الملاحة الذكية (Smart Map Logic)
+        document.getElementById('map-search-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const query = document.getElementById('map-search-input').value.trim().toUpperCase();
+            const resultContainer = document.getElementById('map-search-result');
+            
+            if(!query) { resultContainer.innerHTML = ''; return; }
+
+            const regex = /^([A-Z])(\d+)[-\s]+(\d{2})[-\s]+(\d{2})(?:[-\s]+([A-Z]))?$/;
+            const match = query.match(regex);
+
+            if (match) {
+                const colleges = { '54': 'كلية الهندسة والحاسب', '55': 'كلية إدارة الأعمال', '56': 'كلية التربية', '57': 'كلية الطب' };
+                const floors = { '00': 'الدور الأرضي', '01': 'الدور الأول', '02': 'الدور الثاني', '03': 'الدور الثالث' };
+                
+                const roomName = match[1] + match[2];
+                const floorName = floors[match[3]] || `الدور ${match[3]}`;
+                const buildingName = colleges[match[4]] || `مبنى (رمز ${match[4]})`;
+                const wing = match[5] || match[1];
+
+                resultContainer.innerHTML = `
+                    <div class="p-4 rounded-xl border bg-emerald-50 border-emerald-200 mt-4 animate-slide-up">
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-2 text-emerald-800 font-bold border-b border-emerald-200 pb-2">
+                                <i data-lucide="map-pin" class="w-5 h-5"></i> تم تحليل الرمز بنجاح
+                            </div>
+                            <p class="text-sm font-semibold text-slate-700 pt-1">قاعة دراسية - ${roomName}</p>
+                            <p class="text-sm text-slate-600 flex items-center gap-1"><i data-lucide="building-2" class="w-4 h-4 text-slate-400"></i> المبنى: <span class="font-medium text-slate-800">${buildingName}</span></p>
+                            <p class="text-sm text-slate-600 flex items-center gap-1"><i data-lucide="chevron-left" class="w-4 h-4 text-slate-400"></i> الدور: <span class="font-medium text-slate-800">${floorName}</span></p>
+                            <p class="text-sm text-slate-600 flex items-center gap-1"><i data-lucide="info" class="w-4 h-4 text-slate-400"></i> الجناح: <span class="font-medium text-slate-800">الجناح ${wing}</span></p>
+                        </div>
+                    </div>`;
+                lucide.createIcons();
+            } else {
+                resultContainer.innerHTML = `<div class="p-4 rounded-xl border bg-red-50 border-red-200 text-red-700 mt-4 animate-slide-up"><p class="text-sm font-medium">لم يتم العثور على الرمز، تأكد من الصيغة (مثال: C206 01 54 C)</p></div>`;
+            }
+        });
+
+        document.getElementById('doctor-search-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const query = document.getElementById('doctor-search-input').value.trim();
+            const resultContainer = document.getElementById('doctor-search-result');
+            
+            if(!query) { resultContainer.innerHTML = ''; return; }
+
+            const doctorsDB = [
+                { name: 'د. محمد', office: 'B202', floor: 'الدور الأول', building: 'كلية الهندسة والحاسب' },
+                { name: 'د. خالد الدوسري', office: 'A105', floor: 'الدور الأرضي', building: 'كلية إدارة الأعمال' },
+                { name: 'د. أحمد عبدالله', office: 'C301', floor: 'الدور الثاني', building: 'كلية الطب' },
+                { name: 'د. فهد القحطاني', office: 'E50', floor: 'الدور الأول', building: 'كلية التربية' }
+            ];
+
+            const results = doctorsDB.filter(doc => doc.name.includes(query));
+
+            if (results.length > 0) {
+                let html = `<div class="p-4 rounded-xl border bg-blue-50 border-blue-200 mt-4 animate-slide-up max-h-48 overflow-y-auto"><div class="space-y-3">`;
+                results.forEach((doc, idx) => {
+                    html += `
+                        <div class="${idx !== 0 ? 'border-t border-blue-100 pt-2' : ''}">
+                            <p class="text-sm font-bold text-blue-900 mb-1">${doc.name}</p>
+                            <p class="text-xs text-slate-600 flex items-center gap-1"><i data-lucide="building-2" class="w-3 h-3 text-slate-400"></i> ${doc.building}</p>
+                            <p class="text-xs text-slate-600 flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3 text-slate-400"></i> ${doc.floor} - مكتب ${doc.office}</p>
+                        </div>`;
+                });
+                html += `</div></div>`;
+                resultContainer.innerHTML = html;
+                lucide.createIcons();
+            } else {
+                resultContainer.innerHTML = `<div class="p-4 rounded-xl border bg-red-50 border-red-200 text-red-700 mt-4 animate-slide-up"><p class="text-sm font-medium">لم يتم العثور على دكتور بهذا الاسم.</p></div>`;
+            }
+        });
+
+        // 4. سوق إرث (Market Filtering)
+        function filterMarket(category, btnElement) {
+            // Update buttons styling
+            const buttons = document.querySelectorAll('.market-filter-btn');
+            buttons.forEach(btn => {
+                btn.className = "market-filter-btn px-4 py-2.5 rounded-xl text-sm font-medium transition-colors text-right whitespace-nowrap text-slate-600 hover:bg-slate-50 hover:text-emerald-600 border-r-4 border-transparent";
+            });
+            btnElement.className = "market-filter-btn px-4 py-2.5 rounded-xl text-sm font-medium transition-colors text-right whitespace-nowrap bg-emerald-100 text-emerald-800 border-r-4 border-emerald-600";
+
+            // Filter items
+            const items = document.querySelectorAll('.market-item');
+            items.forEach(item => {
+                if(category === 'الكل' || item.getAttribute('data-category') === category) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // 5. البلاغات (Reports Tabs)
+        function toggleReportsTab(tab) {
+            // Update buttons
+            const buttons = document.querySelectorAll('.report-tab');
+            buttons.forEach(btn => {
+                btn.className = "report-tab px-6 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2 text-slate-600 hover:bg-slate-50";
+            });
+            event.currentTarget.className = "report-tab active px-6 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2 bg-rose-100 text-rose-800";
+
+            // Show/Hide content
+            if(tab === 'lost') {
+                document.getElementById('lost-items-container').classList.remove('hidden');
+                document.getElementById('maintenance-container').classList.add('hidden');
+            } else {
+                document.getElementById('lost-items-container').classList.add('hidden');
+                document.getElementById('maintenance-container').classList.remove('hidden');
+            }
+        }
+
+        // 6. المساعد الذكي (AI Chat & FAQ)
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const chatMessagesContainer = document.getElementById('chat-messages-container');
+        const typingIndicatorWrapper = document.getElementById('typing-indicator-wrapper');
+        const submitBtn = document.getElementById('chat-submit-btn');
+
+        function appendMessage(text, isUser) {
+            const div = document.createElement('div');
+            div.className = `flex ${isUser ? 'justify-end' : 'justify-start'}`;
+            div.innerHTML = `
+                <div class="max-w-[85%] md:max-w-[70%] p-3.5 rounded-2xl text-sm leading-relaxed ${isUser ? 'bg-violet-600 text-white rounded-tr-sm shadow-md' : 'bg-white text-slate-700 border border-slate-200 rounded-tl-sm shadow-sm'}">
+                    ${text}
+                </div>`;
+            chatMessagesContainer.insertBefore(div, typingIndicatorWrapper);
+            chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+        }
+
+        function sendChatMessage(presetText = null) {
+            const text = presetText || chatInput.value;
+            if(!text.trim()) return;
+
+            appendMessage(text, true);
+            chatInput.value = '';
+            submitBtn.disabled = true;
+
+            // Show typing indicator
+            typingIndicatorWrapper.classList.remove('hidden');
+            chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+
+            // Simulate AI
+            setTimeout(() => {
+                typingIndicatorWrapper.classList.add('hidden');
+                submitBtn.disabled = false;
+                
+                let botReply = "هذا رد تجريبي من المساعد الذكي. سيتم ربطي بنموذج لغوي (LLM) لاحقاً.";
+                if (text.includes("معدل")) {
+                    botReply = "يتم حساب المعدل التراكمي بضرب نقاط كل مقرر في عدد وحداته، ثم جمع ناتج ضرب جميع المقررات وقسمته على مجموع الوحدات المعتمدة لجميع المقررات.";
+                }
+                appendMessage(botReply, false);
+            }, 1500);
+        }
+
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            sendChatMessage();
+        });
+
+        chatInput.addEventListener('input', () => {
+            submitBtn.disabled = chatInput.value.trim().length === 0;
+        });
+
+        // FAQ Toggle
+        function toggleFaq(btnElement) {
+            const item = btnElement.parentElement;
+            const content = item.querySelector('.faq-content');
+            const icon = item.querySelector('.faq-icon');
+            
+            const isExpanded = content.classList.contains('max-h-40');
+            
+            // Close all
+            document.querySelectorAll('.faq-content').forEach(el => {
+                el.classList.remove('max-h-40', 'opacity-100', 'pb-4');
+                el.classList.add('max-h-0', 'opacity-0');
+                el.parentElement.classList.remove('border-violet-300', 'bg-violet-50/50');
+            });
+            document.querySelectorAll('.faq-icon').forEach(el => el.classList.remove('rotate-180'));
+
+            // Open clicked if it was closed
+            if(!isExpanded) {
+                content.classList.remove('max-h-0', 'opacity-0');
+                content.classList.add('max-h-40', 'opacity-100', 'pb-4');
+                item.classList.add('border-violet-300', 'bg-violet-50/50');
+                icon.classList.add('rotate-180');
+            }
+        }
+    </script>
+</body>
+</html>
